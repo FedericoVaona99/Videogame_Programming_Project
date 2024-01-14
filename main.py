@@ -2,12 +2,15 @@
 
 import pandas as pd
 import numpy as np
+import visualization_functions as vis
+import streamlit as st
 import matplotlib.pyplot as plt
 
-' Data Exploration '
-
 videogames_df = pd.read_csv('Dataset/metacritic_18.07.2021_csv.csv')
-' Cleaning up the Dataset '
+
+#####################
+# Cleaning up the Dataset
+#####################
 
 # Convert date to datetime object
 videogames_df['date'] = pd.to_datetime(videogames_df['date'])
@@ -15,7 +18,7 @@ videogames_df['date'] = pd.to_datetime(videogames_df['date'])
 # I create the boolean mask to find all the 'tbd'
 to_be_decided_mask = videogames_df.userscore == 'tbd'
 
-' Replacing "tbd" and the NaN values. '
+#####   Replacing "tbd" and the NaN values.
 
 # First, I turn 'tbd' values into NaN values
 videogames_df.loc[to_be_decided_mask,'userscore'] = np.nan
@@ -38,7 +41,10 @@ videogames_df.userscore = videogames_df.userscore * 10
 
 # Cleaning platforms name iOS/n...(Apple Arcade) to iOS (Apple Arcade)
 videogames_df.loc[videogames_df['platforms'] == 'iOS\n                                                                                    \xa0(Apple Arcade)','platforms'] = 'iOS (Apple Arcade)'
-videogames_df['platforms'].unique()
 
+#####################
+# Show some interesting plot
+#####################
 
-' Show some interesting plot'
+st.title("Videogames")
+st.write("First try of the web page")
