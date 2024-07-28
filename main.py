@@ -17,10 +17,10 @@ cleaned_videogames_df = pd.read_csv('Dataset/clean_dataset.csv')
 st.header("Videogames")
 st.write("The **project** is about  ................")
 
-if st.sidebar.checkbox('show the dataframe before the data cleaning'):
-    st.write(original_videogames_df.head())
-if st.sidebar.checkbox('show the dataframe after the data cleaning'):
-    st.write(cleaned_videogames_df.head())
+if st.sidebar.checkbox('show the original dataset'):
+    st.write(original_videogames_df)
+if st.sidebar.checkbox('show the dataset after the data cleaning'):
+    st.write(cleaned_videogames_df)
 
 #####################
 # Show some interesting plot
