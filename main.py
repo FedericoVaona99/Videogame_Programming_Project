@@ -67,12 +67,93 @@ st.write("### Comparison between Metascore and Userscore")
 
 st.write("### Comparison of the two distribution")
 
+st.write("We can see that both the score metric follow a Normal Distribution.")
+
 col1, col2 = st.columns(2)
 with col1:
         vis.plot_histogram(cleaned_videogames_df, 'metascore', 'Metascore Distribution', color='blue')
 with col2:
         vis.plot_histogram(cleaned_videogames_df, 'userscore', 'Userscore Distribution', color='orange')
 
-st.write("We can see that both the score metric follow a Normal Distribution.")
+
+
+plt.figure(figsize=(14, 6))
+
+# Metascore's distrib
+sns.histplot(cleaned_videogames_df['metascore'], bins=100, color='red', label='Metascore', alpha=0.8)
+
+# Userscore distrib
+sns.histplot(cleaned_videogames_df['userscore'], bins=100, color='yellow', label='Userscore', alpha=0.5)
+
+# Titles and labels
+plt.title('The two distribution together')
+plt.xlabel('Score')
+plt.ylabel('Frequency')
+
+plt.legend()
+st.pyplot(plt)
+st.write("Metacritic scores tend to be higher ")
+
+# Calcolo delle differenze tra metascore e userscore
+# Before, I remove the outlier introduced during the data cleaning
+score_diff_df = original_videogames_df.copy()
+to_be_decided_mask = score_diff_df.userscore == 'tbd'
+score_diff_df.loc[to_be_decided_mask,'userscore'] = np.nan
+score_diff_df.userscore = score_diff_df.userscore.astype(float)
+score_diff_df.userscore = score_diff_df.userscore * 10
+score_diff_df.userscore = score_diff_df.userscore.round()
+score_diff_df.dropna(subset=['metascore', 'userscore'], inplace=True)
+
+#Then
+score_diff_df['score_diff'] = score_diff_df['metascore'] - score_diff_df['userscore']
+
+# Distribuzione delle differenze
+plt.figure(figsize=(7, 6))
+sns.histplot(score_diff_df['score_diff'], bins=20, color='purple')
+plt.title('Distribution of the differences between Metascore and Userscore rating')
+plt.xlabel('Difference (Metascore - Userscore)')
+plt.ylabel('Frequency')
+
+plt.tight_layout()
+st.pyplot(plt)
+
+st.write("We can see that the peak of the distribution is nar 0, then the ratings often corresponds; but there are several cases where we have huge differences between the userscore and the metacritic scores with differences of 30-40 points")
+
+# Correlation Heatmap
+st.write("### Correlation Heatmap without the categorical variables")
+vis.plot_correlation_heatmap(cleaned_videogames_df, 'Correlation between Metascore and Userscore')
+
+st.write("### Correlation Heatmap with the categorical variables")
+
+# Identify the top 5 genres and platforms based on occurrence
+top_genres = cleaned_videogames_df['genre'].value_counts().head(5).index.tolist()
+top_platforms = cleaned_videogames_df['platform'].value_counts().head(5).index.tolist()
+
+# Filter the DataFrame to include only rows with top genres and platforms
+filtered_df = cleaned_videogames_df[
+cleaned_videogames_df['genre'].isin(top_genres) &
+cleaned_videogames_df['platform'].isin(top_platforms)
+]
+
+# One-Hot Encode 'genre' and 'platform' for the filtered DataFrame
+genre_encoded = pd.get_dummies(filtered_df['genre'], prefix='g')
+platform_encoded = pd.get_dummies(filtered_df['platform'], prefix='p')
+
+# Combine the encoded columns with the original DataFrame
+encoded_df = pd.concat([filtered_df[['metascore', 'userscore']], genre_encoded, platform_encoded], axis=1)
+
+# Compute the correlation matrix for all variables
+correlation_matrix = encoded_df.corr()
+
+# Plotting the complete correlation matrix
+plt.figure(figsize=(len(correlation_matrix.columns), len(correlation_matrix.columns) * 0.5))  # Size the figure to fit all variables
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title('Complete Correlation Matrix with Top 5 Genres and Platforms')
+plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
+plt.yticks(rotation=0)   # Ensure y-axis labels are horizontal for better readability
+plt.tight_layout()  # Adjust layout to not cut off labels
+
+# Use Streamlit's function to show the plot
+st.pyplot(plt)
 
 
