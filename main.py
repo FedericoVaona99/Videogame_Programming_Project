@@ -6,6 +6,7 @@ import seaborn as sns
 import visualization_functions as vis
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -182,4 +183,32 @@ plt.tight_layout()  # Adjust layout to not cut off labels
 # Use Streamlit's function to show the plot
 st.pyplot(plt)
 
+# Assuming cleaned_videogames_df is already loaded
+# Convert 'date' column to datetime if not already
+cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
 
+# Set the 'date' column as the index of the DataFrame
+cleaned_videogames_df.set_index('date', inplace=True)
+
+# Resample and calculate the mean of user scores and metascores by year
+yearly_avg_userscores = cleaned_videogames_df['userscore'].resample('Y').mean()
+yearly_avg_metascores = cleaned_videogames_df['metascore'].resample('Y').mean()
+
+# Plotting
+plt.figure(figsize=(12, 6))
+plt.plot(yearly_avg_userscores.index, yearly_avg_userscores.values, label='Average User Score', marker='o', color='blue')
+plt.plot(yearly_avg_metascores.index, yearly_avg_metascores.values, label='Average Metascore', marker='o', color='red')
+
+# Set major and minor ticks format
+ax = plt.gca()  # Get current axis
+ax.xaxis.set_major_locator(mdates.YearLocator())  # Set major locator to every year
+ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))  # Format x-axis labels to show only the year
+# Rotate x-axis labels to prevent overlap
+ax.tick_params(axis='x', rotation=45)  # Rotate labels to 45 degrees
+
+plt.title('Comparison of Average User Scores and Metascores Over Time')
+plt.xlabel('Year')
+plt.ylabel('Score')
+plt.legend()
+plt.grid(True)
+st.pyplot(plt)
