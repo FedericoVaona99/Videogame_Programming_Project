@@ -32,5 +32,11 @@ def plot_correlation_heatmap(data, title):
     ax.set_title(title)
     st.pyplot(fig)
 
-
+def plot_boxplot(xlabel, ylabel, data,title, palette='Blues' ):
+    sns.boxplot(x=xlabel, y=ylabel, data=data, palette=palette)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.xticks(rotation=90)
+    st.pyplot(plt)
 
