@@ -213,7 +213,6 @@ plt.tight_layout()  # Adjust layout to not cut off labels
 # Use Streamlit's function to show the plot
 st.pyplot(plt)
 
-# Assuming cleaned_videogames_df is already loaded
 # Convert 'date' column to datetime if not already
 cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
 
@@ -242,3 +241,32 @@ plt.ylabel('Score')
 plt.legend()
 plt.grid(True)
 st.pyplot(plt)
+
+col5, col6 = st.columns(2)
+cleaned_videogames_df.reset_index(inplace=True)
+
+# Convert the 'date' column to datetime and extract the year
+cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
+cleaned_videogames_df['year'] = cleaned_videogames_df['date'].dt.year
+
+with col5:
+        # Find the game with the highest metascore for each year
+        best_games_per_year_meta = cleaned_videogames_df.loc[cleaned_videogames_df.groupby('year')['metascore'].idxmax()]
+        best_games_per_year_meta.reset_index(inplace=True)
+
+        # Ensure the year is displayed without decimals
+        best_games_per_year_meta['year'] = best_games_per_year_meta['year'].astype(str)
+
+        # Display the DataFrame in Streamlit
+        st.write("Top game for each year per Metacritic")
+        st.dataframe(best_games_per_year_meta[['title','platform','metascore','userscore','year']], width=750)
+
+with col6:
+        # Find the game with the highest userscore for each year
+        best_games_per_year_user = cleaned_videogames_df.loc[
+                cleaned_videogames_df.groupby('year')['userscore'].idxmax()]
+        best_games_per_year_user.reset_index(inplace=True)
+
+        best_games_per_year_user['year'] = best_games_per_year_user['year'].astype(str)
+        st.write("Top game for each year per Players")
+        st.dataframe(best_games_per_year_user[['title', 'platform', 'metascore', 'userscore', 'year']], width=750)
