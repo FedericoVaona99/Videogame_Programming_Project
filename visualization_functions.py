@@ -1,7 +1,7 @@
 import streamlit as st
-import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -37,12 +37,15 @@ def plot_correlation_heatmap(data, title):
 def display_top_games_by_score_type(df,feature, features, score_type, num_games=3):
     all_top_games = []
 
-    # Loop over each selected genre and append the top games to the list
+    # Step 1: Adjust aggregation to group by both 'title' and 'genre'
+    aggregated_df = df.groupby(['title', feature]).agg({score_type: 'mean'}).reset_index()
+
+    # Step 2: Loop over each selected feature value and append the top games to the list
     for feat in features:
-        # Filter the DataFrame for the genre
-        genre_df = df[df[feature] == feat]
+        # Filter the DataFrame for the specific feature
+        filtered_df = aggregated_df[aggregated_df[feature] == feat]
         # Sort by the specified score type and take the top entries
-        top_games = genre_df.nlargest(num_games, score_type)[['title', feature, score_type]]
+        top_games = filtered_df.nlargest(num_games, score_type)[['title', feature, score_type]]
         all_top_games.append(top_games)
 
     # Concatenate all DataFrames in the list into a single DataFrame and reset the index

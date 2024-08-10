@@ -62,12 +62,12 @@ if selection == "genre":
 
         # Average User Score by Genre
         avg_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
-        vis.plot_bar(fig_size=(14, 6), datas=avg_userscore, col='lightgreen', title='Average User Score by '+ selection,
+        vis.plot_bar(fig_size=(12, 6), datas=avg_userscore, col='lightgreen', title='Average User Score by '+ selection,
                      x_lab=selection, y_lab='Average User Score', rot=90)
 
         # Average Metacritic score by Genre
         avg_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
-        vis.plot_bar(fig_size=(14, 6), datas=avg_metascore, col='lightgreen',
+        vis.plot_bar(fig_size=(12, 6), datas=avg_metascore, col='lightgreen',
                      title='Average Metacritic Score by ' + selection,
                      x_lab=selection, y_lab='Average Metacritic Score', rot=90)
 
@@ -88,16 +88,16 @@ if selection == "genre":
 elif selection == "platform":
 
         general_counts = cleaned_videogames_df[selection].value_counts()
-        vis.plot_bar((12, 8), general_counts, col = 'lightblue', title = 'Number of Games per ' + selection, x_lab = selection, y_lab = 'Number of Games', rot=90)
+        vis.plot_bar((12, 6), general_counts, col = 'lightblue', title = 'Number of Games per ' + selection, x_lab = selection, y_lab = 'Number of Games', rot=90)
 
         # Average User Score by Platform
         avg_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
-        vis.plot_bar(fig_size=(14, 6), datas=avg_userscore, col='lightblue', title='Average User Score by '+ selection,
+        vis.plot_bar(fig_size=(12, 6), datas=avg_userscore, col='lightblue', title='Average User Score by '+ selection,
                      x_lab=selection, y_lab='Average User Score', rot=90)
 
         # Average Metacritic score by Platform
         avg_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
-        vis.plot_bar(fig_size=(14, 6), datas=avg_metascore, col='lightblue',
+        vis.plot_bar(fig_size=(12,6), datas=avg_metascore, col='lightblue',
                      title='Average Metacritic Score by ' + selection,
                      x_lab=selection, y_lab='Average Metacritic Score', rot=90)
 
