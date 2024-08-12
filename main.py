@@ -8,11 +8,6 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, Lasso
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, accuracy_score, precision_score, recall_score, f1_score
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, Lasso, LogisticRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, GradientBoostingClassifier, RandomForestClassifier
 from sklearn.svm import SVC
@@ -344,10 +339,10 @@ with st.expander("MACHINE LEARNING"):
                 accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model,"Classification")
 
                 # Display results
-                st.write(f"Accuracy: {accuracy}")
-                st.write(f"Precision: {precision}")
-                st.write(f"Recall: {recall}")
-                st.write(f"F1 Score: {f1}")
+                st.write(f"Accuracy: {accuracy * 100} %")
+                st.write(f"Precision: {precision * 100} %")
+                st.write(f"Recall: {recall * 100} %")
+                st.write(f"F1 Score: {f1 * 100} %")
 
                 vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
         else:

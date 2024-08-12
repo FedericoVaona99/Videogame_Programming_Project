@@ -63,7 +63,7 @@ def display_top_games_by_score_type(df,feature, features, score_type, num_games=
 def loading_data(section):
 
     # Mostra uno spinner durante il caricamento
-    with st.spinner(f"Caricamento della sezione {section}..."):
+    with st.spinner(f"Loading of the {section} method..."):
         time.sleep(2)  # Simula un'operazione di caricamento
     st.success(f"{section} evaluation completed!")
 
