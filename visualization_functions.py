@@ -73,17 +73,21 @@ def loading_data(section):
 ###########################
 
 # Function to load and prepare data
-def prepare_data(df, model_type):
+def prepare_data(df, classification_type):
 
-    if model_type == "Regression":
+    if classification_type == "type1":
+        # Definizione delle categorie basate sul metascore
+        bins = [0, 65, 79, 100]  # Definisce gli intervalli per "Scarso", "Medio", "Buono"
+        labels = ['Scarso', 'Medio', 'Buono']
+        df['category'] = pd.cut(df['metascore'], bins=bins, labels=labels, include_lowest=True)
+
+        # Preparazione delle variabili predittive
         X = df[['metascore', 'genre', 'platform']]
-        y = df['userscore']
-        encoder = OneHotEncoder()
-        X_encoded = encoder.fit_transform(X[['genre', 'platform']]).toarray()
-        feature_names = encoder.get_feature_names_out(['genre', 'platform'])
-        X_encoded_df = pd.DataFrame(X_encoded, columns=feature_names)
-        X_final = pd.concat([df[['metascore']], X_encoded_df], axis=1)
-    elif model_type == "Classification":
+        # Applica One-Hot Encoding a genre e platform
+        X_final = pd.get_dummies(X, columns=['genre', 'platform'])
+        y = df['category']
+
+    elif classification_type == "type2":
         success_threshold = 75
         df['success'] = np.where(df['userscore'] >= success_threshold, 1, 0)
         X_final = df[['metascore']]
@@ -94,31 +98,21 @@ def prepare_data(df, model_type):
 def train_and_evaluate_model(X_train, X_test, y_train, y_test, model,type):
     model.fit(X_train, y_train)
     predictions = model.predict(X_test)
-    if type=="Regression":
-        mse = mean_squared_error(y_test, predictions)
-        r2 = r2_score(y_test, predictions)
-        mae = mean_absolute_error(y_test, predictions)
-        return mse, r2, mae, predictions
-
-    elif type=="Classification":
+    if type =="type1":
+        accuracy = accuracy_score(y_test, predictions)
+        precision = precision_score(y_test, predictions, average='macro', zero_division=0)
+        recall = recall_score(y_test, predictions, average='macro')
+        f1 = f1_score(y_test, predictions, average='macro')
+    elif type =="type2":
         accuracy = accuracy_score(y_test, predictions)
         precision = precision_score(y_test, predictions, average='binary', zero_division=0)
         recall = recall_score(y_test, predictions, average='binary')
         f1 = f1_score(y_test, predictions, average='binary')
-        return accuracy, precision, recall, f1
+    return accuracy, precision, recall, f1
 
 # Function to plot results
-def plot_Regression_results(y_test, predictions, plot_type):
-    if plot_type == "Regression":
-        plt.figure(figsize=(10, 6))
-        plt.scatter(y_test, predictions, alpha=0.5)
-        plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
-        plt.xlabel('Actual Values')
-        plt.ylabel('Predicted Values')
-        plt.title('Comparison of Actual vs. Predicted Values')
-        st.pyplot(plt)
 
-def plot_Classification_results(accuracy, precision, recall, f1,method_selected):
+def plot_Classification_results(accuracy, precision, recall, f1, method_selected):
     results = {
         'Accuracy': accuracy,
         'Precision': precision,

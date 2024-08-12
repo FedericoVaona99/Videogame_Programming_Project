@@ -278,46 +278,19 @@ with st.expander("VISUALIZATION"):
 
 with st.expander("MACHINE LEARNING"):
 
-        model_selection = st.selectbox('Select which model you want to display:', ["","Regression Model","Classification Model"])
-        if model_selection == "Regression Model":
+        model_selection = st.selectbox('Select which model you want to display:', ["","Classification Genre and Platform","Classification Userscore"])
 
-                # Data preparation
-                df = pd.read_csv('Dataset/clean_dataset.csv')
-                X_final, y = vis.prepare_data(df,"Regression")
-                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=0.2, random_state=22)
-
-                method_selected = st.selectbox('Select which method to use:',['Linear regression','RandomForest','Gradient Boosting','Lasso'])
-
-                if method_selected == "Linear regression":
-                        vis.loading_data("Linear Regression")
-                        model = LinearRegression()
-                elif method_selected == "RandomForest":
-                        vis.loading_data("RandomForest")
-                        model = RandomForestRegressor(n_estimators=100, random_state=22)
-                elif method_selected == "Gradient Boosting":
-                        vis.loading_data("Gradient Boosting")
-                        model = GradientBoostingRegressor(n_estimators=100, random_state=22)
-                elif method_selected == "Lasso":
-                        vis.loading_data("Lasso")
-                        model = Lasso(alpha=0.1)
-
-                mse, r2, mae, predictions = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "Regression")
-
-                # Display results
-                st.write(f"Mean Squared Error: {mse}")
-                st.write(f"R-squared: {r2}")
-                st.write(f"Mean Absolute Error: {mae}")
-                vis.plot_Regression_results(y_test, predictions,"Regression")
-
-        elif model_selection == "Classification Model":
+        if model_selection == "Classification Genre and Platform":
 
                 df = pd.read_csv('Dataset/clean_dataset.csv')
-                X_final, y = vis.prepare_data(df, "Classification")
-                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=0.2, random_state=42)
+                X_final, y = vis.prepare_data(df, "type1")
 
                 method_selected = st.selectbox("Select which classification method to use:",
                                                ["Logistic Regression", "Support Vector Machine",
                                                 "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
+                options = [round(x * 0.05, 2) for x in range(1, 20)]
+                test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=test_size, random_state=42)
 
                 if method_selected == "Logistic Regression":
                         vis.loading_data("Logistic Regression")
@@ -336,7 +309,48 @@ with st.expander("MACHINE LEARNING"):
                         model = RandomForestClassifier(random_state=42)
 
                 # Evaluation
-                accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model,"Classification")
+                accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "type1")
+
+                # Display results
+                st.write(f"Accuracy: {accuracy * 100} %")
+                st.write(f"Precision: {precision * 100} %")
+                st.write(f"Recall: {recall * 100} %")
+                st.write(f"F1 Score: {f1 * 100} %")
+
+                vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
+
+        elif model_selection == "Classification Userscore":
+
+                df = pd.read_csv('Dataset/clean_dataset.csv')
+                X_final, y = vis.prepare_data(df, "type2")
+
+
+                method_selected = st.selectbox("Select which classification method to use:",
+                                               ["Logistic Regression", "Support Vector Machine",
+                                                "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
+
+                options = [round(x * 0.05, 2) for x in range(1, 20)]
+                test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size= test_size, random_state=42)
+
+                if method_selected == "Logistic Regression":
+                        vis.loading_data("Logistic Regression")
+                        model = LogisticRegression(random_state=42)
+                elif method_selected == "Support Vector Machine":
+                        vis.loading_data("Support Vector Machine")
+                        model = SVC(random_state=42)
+                elif method_selected == "Gradient Boosting":
+                        vis.loading_data("Gradient Boosting")
+                        model = GradientBoostingClassifier(random_state=42)
+                elif method_selected == "K-Nearest Neighbors":
+                        vis.loading_data("K-Nearest Neighbors")
+                        model = KNeighborsClassifier()
+                elif method_selected == "Random Forest":
+                        vis.loading_data("Random Forest")
+                        model = RandomForestClassifier(random_state=42)
+
+                # Evaluation
+                accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "type2")
 
                 # Display results
                 st.write(f"Accuracy: {accuracy * 100} %")
