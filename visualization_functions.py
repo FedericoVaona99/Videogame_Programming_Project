@@ -2,6 +2,11 @@ import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
+import time
+from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -54,3 +59,82 @@ def display_top_games_by_score_type(df,feature, features, score_type, num_games=
     # Display the concatenated DataFrame in Streamlit
     st.dataframe(combined_top_games, width=1500, height=300)
 
+# Funzione per simulare il caricamento
+def loading_data(section):
+
+    # Mostra uno spinner durante il caricamento
+    with st.spinner(f"Caricamento della sezione {section}..."):
+        time.sleep(2)  # Simula un'operazione di caricamento
+    st.success(f"{section} evaluation completed!")
+
+
+###########################
+## Machine Learning function
+###########################
+
+# Function to load and prepare data
+def prepare_data(df, model_type):
+
+    if model_type == "Regression":
+        X = df[['metascore', 'genre', 'platform']]
+        y = df['userscore']
+        encoder = OneHotEncoder()
+        X_encoded = encoder.fit_transform(X[['genre', 'platform']]).toarray()
+        feature_names = encoder.get_feature_names_out(['genre', 'platform'])
+        X_encoded_df = pd.DataFrame(X_encoded, columns=feature_names)
+        X_final = pd.concat([df[['metascore']], X_encoded_df], axis=1)
+    elif model_type == "Classification":
+        success_threshold = 75
+        df['success'] = np.where(df['userscore'] >= success_threshold, 1, 0)
+        X_final = df[['metascore']]
+        y = df['success']
+    return X_final, y
+
+# Function to train and evaluate a model
+def train_and_evaluate_model(X_train, X_test, y_train, y_test, model,type):
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    if type=="Regression":
+        mse = mean_squared_error(y_test, predictions)
+        r2 = r2_score(y_test, predictions)
+        mae = mean_absolute_error(y_test, predictions)
+        return mse, r2, mae, predictions
+
+    elif type=="Classification":
+        accuracy = accuracy_score(y_test, predictions)
+        precision = precision_score(y_test, predictions, average='binary', zero_division=0)
+        recall = recall_score(y_test, predictions, average='binary')
+        f1 = f1_score(y_test, predictions, average='binary')
+        return accuracy, precision, recall, f1
+
+# Function to plot results
+def plot_Regression_results(y_test, predictions, plot_type):
+    if plot_type == "Regression":
+        plt.figure(figsize=(10, 6))
+        plt.scatter(y_test, predictions, alpha=0.5)
+        plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
+        plt.xlabel('Actual Values')
+        plt.ylabel('Predicted Values')
+        plt.title('Comparison of Actual vs. Predicted Values')
+        st.pyplot(plt)
+
+def plot_Classification_results(accuracy, precision, recall, f1,method_selected):
+    results = {
+        'Accuracy': accuracy,
+        'Precision': precision,
+        'Recall': recall,
+        'F1 Score': f1
+    }
+
+    # Plotting
+    results_df = pd.DataFrame([results])  # Convert dictionary to DataFrame
+    fig, ax = plt.subplots(figsize=(8, 4))
+    results_df.plot(kind='bar', ax=ax, colormap='viridis')
+    plt.title(f'{method_selected} Performance Metrics')
+    plt.xlabel('Metric')
+    plt.ylabel('Score')
+    plt.xticks(ticks=[0], labels=[method_selected], rotation=0)
+    plt.ylim(0, 1)
+    plt.legend(loc='lower right')
+    plt.tight_layout()
+    st.pyplot(fig)
