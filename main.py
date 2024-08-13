@@ -20,6 +20,7 @@ st.set_option('deprecation.showPyplotGlobalUse', False)
 original_videogames_df = pd.read_csv('Dataset/metacritic_18.07.2021_csv.csv')
 # I did the complete EDA part and cleaned the dataframe on colab notebook uploaded on github
 cleaned_videogames_df = pd.read_csv('Dataset/clean_dataset.csv')
+cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
 
 # Initializing web page
 st.set_page_config(layout = 'wide')
@@ -183,42 +184,6 @@ with st.expander("VISUALIZATION"):
 
         st.write("We can see that the peak of the distribution is near 0, then the ratings often corresponds; but there are several cases where we have huge differences between the userscore and the metacritic scores with differences of 30-40 points")
 
-        # Correlation Heatmap
-        st.write("### Correlation Heatmap without the categorical variables")
-        vis.plot_correlation_heatmap(cleaned_videogames_df, 'Correlation between Metascore and Userscore')
-
-        st.write("### Correlation Heatmap with the categorical variables")
-
-        # Identify the top 5 genres and platforms based on occurrence
-        top_genres = cleaned_videogames_df['genre'].value_counts().head(5).index.tolist()
-        top_platforms = cleaned_videogames_df['platform'].value_counts().head(5).index.tolist()
-
-        # Filter the DataFrame to include only rows with top genres and platforms
-        filtered_df = cleaned_videogames_df[
-        cleaned_videogames_df['genre'].isin(top_genres) &
-        cleaned_videogames_df['platform'].isin(top_platforms)
-        ]
-
-        # One-Hot Encode 'genre' and 'platform' for the filtered DataFrame
-        genre_encoded = pd.get_dummies(filtered_df['genre'], prefix='g')
-        platform_encoded = pd.get_dummies(filtered_df['platform'], prefix='p')
-
-        # Combine the encoded columns with the original DataFrame
-        encoded_df = pd.concat([filtered_df[['metascore', 'userscore']], genre_encoded, platform_encoded], axis=1)
-
-        # Compute the correlation matrix for all variables
-        correlation_matrix = encoded_df.corr()
-
-        # Plotting the complete correlation matrix
-        plt.figure(figsize=(len(correlation_matrix.columns), len(correlation_matrix.columns) * 0.5))  # Size the figure to fit all variables
-        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
-        plt.title('Complete Correlation Matrix with Top 5 Genres and Platforms')
-        plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
-        plt.yticks(rotation=0)   # Ensure y-axis labels are horizontal for better readability
-        plt.tight_layout()  # Adjust layout to not cut off labels
-
-        # Use Streamlit's function to show the plot
-        st.pyplot(plt)
 
         # Convert 'date' column to datetime if not already
         cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
@@ -252,8 +217,7 @@ with st.expander("VISUALIZATION"):
         col5, col6 = st.columns(2)
         cleaned_videogames_df.reset_index(inplace=True)
 
-        # Convert the 'date' column to datetime and extract the year
-        cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
+        #  and extract the year
         cleaned_videogames_df['year'] = cleaned_videogames_df['date'].dt.year
 
         with col5:
@@ -277,6 +241,44 @@ with st.expander("VISUALIZATION"):
                 best_games_per_year_user['year'] = best_games_per_year_user['year'].astype(str)
                 st.write("Top game for each year per Players")
                 st.dataframe(best_games_per_year_user[['title', 'platform', 'metascore', 'userscore', 'year']], width=750)
+
+                # Correlation Heatmap
+        st.write("### Correlation Heatmap without the categorical variables")
+        vis.plot_correlation_heatmap(cleaned_videogames_df, 'Correlation between Metascore and Userscore')
+
+        st.write("### Correlation Heatmap with the categorical variables")
+
+        # Identify the top 5 genres and platforms based on occurrence
+        top_genres = cleaned_videogames_df['genre'].value_counts().head(5).index.tolist()
+        top_platforms = cleaned_videogames_df['platform'].value_counts().head(5).index.tolist()
+
+        # Filter the DataFrame to include only rows with top genres and platforms
+        filtered_df = cleaned_videogames_df[
+                cleaned_videogames_df['genre'].isin(top_genres) &
+                cleaned_videogames_df['platform'].isin(top_platforms)
+                ]
+
+        # One-Hot Encode 'genre' and 'platform' for the filtered DataFrame
+        genre_encoded = pd.get_dummies(filtered_df['genre'], prefix='g')
+        platform_encoded = pd.get_dummies(filtered_df['platform'], prefix='p')
+
+        # Combine the encoded columns with the original DataFrame
+        encoded_df = pd.concat([filtered_df[['metascore', 'userscore','year']], genre_encoded, platform_encoded], axis=1)
+
+        # Compute the correlation matrix for all variables
+        correlation_matrix = encoded_df.corr()
+
+        # Plotting the complete correlation matrix
+        plt.figure(figsize=(
+        len(correlation_matrix.columns), len(correlation_matrix.columns) * 0.5))  # Size the figure to fit all variables
+        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+        plt.title('Complete Correlation Matrix with Top 5 Genres and Platforms')
+        plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
+        plt.yticks(rotation=0)  # Ensure y-axis labels are horizontal for better readability
+        plt.tight_layout()  # Adjust layout to not cut off labels
+
+        # Use Streamlit's function to show the plot
+        st.pyplot(plt)
 
 
 #######################
@@ -310,16 +312,16 @@ with st.expander("MACHINE LEARNING"):
                         model = LogisticRegression(random_state=42)
                 elif method_selected == "Support Vector Machine":
                         vis.loading_data("Support Vector Machine")
-                        model = SVC(random_state=42)
+                        model = SVC(random_state=42, C=0.01, kernel='rbf', gamma= 0.001)
                 elif method_selected == "Gradient Boosting":
                         vis.loading_data("Gradient Boosting")
-                        model = GradientBoostingClassifier(random_state=42)
+                        model = GradientBoostingClassifier(random_state=42,)
                 elif method_selected == "K-Nearest Neighbors":
                         vis.loading_data("K-Nearest Neighbors")
                         model = KNeighborsClassifier()
                 elif method_selected == "Random Forest":
                         vis.loading_data("Random Forest")
-                        model = RandomForestClassifier(random_state=42)
+                        model = RandomForestClassifier(random_state=42, n_estimators=10, max_depth=10,min_samples_split=10, min_samples_leaf=5)  # changed to avoid overfitting
 
                 # Evaluation
                 accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "type1")
