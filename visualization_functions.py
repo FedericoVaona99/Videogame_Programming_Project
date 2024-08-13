@@ -77,8 +77,8 @@ def prepare_data(df, classification_type):
 
     if classification_type == "type1":
         # Definizione delle categorie basate sul metascore
-        bins = [0, 65, 79, 100]  # Definisce gli intervalli per "Scarso", "Medio", "Buono"
-        labels = ['Scarso', 'Medio', 'Buono']
+        bins = [0, 65, 80, 100]  # Definisce gli intervalli per "Scarso", "Medio", "Buono"
+        labels = ['Bad Game', 'Average Game', 'Good Game']
         df['category'] = pd.cut(df['metascore'], bins=bins, labels=labels, include_lowest=True)
 
         # Preparazione delle variabili predittive

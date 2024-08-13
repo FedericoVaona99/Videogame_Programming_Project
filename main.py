@@ -3,6 +3,8 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
+from sklearn.metrics import classification_report, confusion_matrix
+
 import visualization_functions as vis
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -38,14 +40,14 @@ st.markdown("""
 #####################
 # some EDA
 #####################
-st.sidebar.write('Choose which dataset yuo want to see:')
-if st.sidebar.checkbox('original dataset'):
+st.sidebar.write('Choose which Dataset you want to see:')
+if st.sidebar.checkbox('Original Dataset'):
         st.subheader('Original dataset')
         st.dataframe(original_videogames_df, width=1500)
         st.write('Numerical value before the cleaning:')
         st.write(original_videogames_df.describe().T)
 
-if st.sidebar.checkbox('dataset after the data cleaning'):
+if st.sidebar.checkbox('Cleaned Dataset'):
         st.subheader('Dataset after the data cleaning')
         st.dataframe(cleaned_videogames_df, width= 1500)
         st.write('Numerical value after the cleaning:')
@@ -276,11 +278,22 @@ with st.expander("VISUALIZATION"):
                 st.write("Top game for each year per Players")
                 st.dataframe(best_games_per_year_user[['title', 'platform', 'metascore', 'userscore', 'year']], width=750)
 
+
+#######################
+### MACHINE LEARNING
+#######################
+
 with st.expander("MACHINE LEARNING"):
 
-        model_selection = st.selectbox('Select which model you want to display:', ["","Classification Genre and Platform","Classification Userscore"])
+        st.markdown("""
+        In this part, i made 2 distinct classification model:
+        - **Classification by Genre and Platform:** The model try to classify the videogames in one of these 3 categories -> [Good Game, Average Game, Bad Game] knowing only the genre and the platform of the videogame.
+        - **Classification by Metascore:** The model try to classify the videogames in a **succesfull** game for the players or **not successful** knowing only the score obtained by metacritic.
+        """)
 
-        if model_selection == "Classification Genre and Platform":
+        model_selection = st.selectbox('Select which model you want to display:', ["","Classification by Genre and Platform","Classification by Metascore"])
+
+        if model_selection == "Classification by Genre and Platform":
 
                 df = pd.read_csv('Dataset/clean_dataset.csv')
                 X_final, y = vis.prepare_data(df, "type1")
@@ -319,7 +332,7 @@ with st.expander("MACHINE LEARNING"):
 
                 vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
 
-        elif model_selection == "Classification Userscore":
+        elif model_selection == "Classification by Metascore":
 
                 df = pd.read_csv('Dataset/clean_dataset.csv')
                 X_final, y = vis.prepare_data(df, "type2")
