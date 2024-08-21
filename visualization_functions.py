@@ -60,12 +60,19 @@ def display_top_games_by_score_type(df,feature, features, score_type, num_games=
     st.dataframe(combined_top_games, width=1500, height=300)
 
 # Funzione per simulare il caricamento
-def loading_data(section):
+def loading_data(section, type = "type1"):
 
-    # Mostra uno spinner durante il caricamento
-    with st.spinner(f"Loading of the {section} method..."):
-        time.sleep(2)  # Simula un'operazione di caricamento
-    st.success(f"{section} evaluation completed!")
+    if type == "type2":
+        # Mostra uno spinner durante il caricamento
+        with st.spinner(f"Loading of the {section} method..."):
+            time.sleep(2)  # Simula un'operazione di caricamento
+        st.success(f"{section} evaluation completed!")
+    elif type == "type1":
+        progress_bar = st.progress(0)
+        for percent_complete in range(100):
+            time.sleep(0.04)  # Simula un'operazione di caricamento
+            progress_bar.progress(percent_complete + 1)
+        st.success(f"{section} evaluation completed!")
 
 
 ###########################

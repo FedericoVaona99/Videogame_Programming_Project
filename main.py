@@ -287,11 +287,11 @@ with st.expander("MACHINE LEARNING"):
 
         st.markdown("""
                 In this part, i made 2 distinct classification model:
-                - **Quality Classification:** The model try to classify the videogames into one of these 3 categories -> [Good Game, Average Game, Bad Game] based on the selected features. The quality of the videogame in this case depends on the rating it obtained from Metacritic.
                 - **Game Success Classification:** The model try to classify the videogames in a **succesfull** game for the players or **not successful** knowing only the score obtained by metacritic.
+                - **Quality Classification:** The model try to classify the videogames into one of these 3 categories -> [Good Game, Average Game, Bad Game] based on the selected features. The quality of the videogame in this case depends on the rating it obtained from Metacritic.
                 """)
 
-        model_selection = st.selectbox('Select which model you want to display:', ["","Quality Classification","Game Success Classification"])
+        model_selection = st.selectbox('Select which model you want to display:', ["","Game Success Classification","Quality Classification"])
 
         if model_selection == "Quality Classification":
 
@@ -354,19 +354,19 @@ with st.expander("MACHINE LEARNING"):
                 X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size= test_size, random_state=22)
 
                 if method_selected == "Logistic Regression":
-                        vis.loading_data("Logistic Regression")
+                        vis.loading_data("Logistic Regression","type2")
                         model = LogisticRegression(random_state=22)
                 elif method_selected == "Support Vector Machine":
-                        vis.loading_data("Support Vector Machine")
+                        vis.loading_data("Support Vector Machine","type2")
                         model = SVC(random_state=22)
                 elif method_selected == "Gradient Boosting":
-                        vis.loading_data("Gradient Boosting")
+                        vis.loading_data("Gradient Boosting","type2")
                         model = GradientBoostingClassifier(random_state=22)
                 elif method_selected == "K-Nearest Neighbors":
-                        vis.loading_data("K-Nearest Neighbors")
+                        vis.loading_data("K-Nearest Neighbors","type2")
                         model = KNeighborsClassifier()
                 elif method_selected == "Random Forest":
-                        vis.loading_data("Random Forest")
+                        vis.loading_data("Random Forest","type2")
                         model = RandomForestClassifier(random_state=22)
 
                 # Evaluation
