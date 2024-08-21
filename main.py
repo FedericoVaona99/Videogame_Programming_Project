@@ -222,9 +222,13 @@ with st.expander("VISUALIZATIONS"):
         cleaned_videogames_df['year'] = cleaned_videogames_df['date'].dt.year
 
         with col5:
-                # Find the game with the highest metascore for each year
-                best_games_per_year_meta = cleaned_videogames_df.loc[cleaned_videogames_df.groupby('year')['metascore'].idxmax()]
-                best_games_per_year_meta.reset_index(inplace=True)
+
+                # Group by year and find the index of the highest metascore for each year
+                idx = cleaned_videogames_df.groupby('year')['metascore'].idxmax()
+                # Select the rows with the highest metascore for each year
+                best_games_per_year_meta = cleaned_videogames_df.loc[idx]
+                # Reset the index for the final output
+                best_games_per_year_meta.reset_index(drop=True, inplace=True)
 
                 # Ensure the year is displayed without decimals
                 best_games_per_year_meta['year'] = best_games_per_year_meta['year'].astype(str)
@@ -234,10 +238,13 @@ with st.expander("VISUALIZATIONS"):
                 st.dataframe(best_games_per_year_meta[['title','platform','metascore','userscore','year']], width=750)
 
         with col6:
-                # Find the game with the highest userscore for each year
-                best_games_per_year_user = cleaned_videogames_df.loc[
-                        cleaned_videogames_df.groupby('year')['userscore'].idxmax()]
-                best_games_per_year_user.reset_index(inplace=True)
+
+                # Group by year and find the index of the highest userscore for each year
+                idx = cleaned_videogames_df.groupby('year')['userscore'].idxmax()
+                # Select the rows with the highest userscore for each year
+                best_games_per_year_user = cleaned_videogames_df.loc[idx]
+                # Reset the index for the final output
+                best_games_per_year_user.reset_index(drop=True, inplace=True)
 
                 best_games_per_year_user['year'] = best_games_per_year_user['year'].astype(str)
                 st.write("Top game for each year per Players")
