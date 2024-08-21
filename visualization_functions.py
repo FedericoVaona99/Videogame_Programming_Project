@@ -73,18 +73,22 @@ def loading_data(section):
 ###########################
 
 # Function to load and prepare data
-def prepare_data(df, classification_type):
+def prepare_data(df, classification_type, features = []):
 
     if classification_type == "type1":
+
         # Definizione delle categorie basate sul metascore
         bins = [0, 65, 80, 100]  # Definisce gli intervalli per "Scarso", "Medio", "Buono"
         labels = ['Bad Game', 'Average Game', 'Good Game']
         df['category'] = pd.cut(df['metascore'], bins=bins, labels=labels, include_lowest=True)
 
-        # Preparazione delle variabili predittive
-        X = df[['metascore', 'genre', 'platform']]
-        # Applica One-Hot Encoding a genre e platform
-        X_final = pd.get_dummies(X, columns=['genre', 'platform'])
+        # Preparazione delle variabili predittive usando le features selezionate
+        X_final = df[features]
+
+        # Applica One-Hot Encoding se le features contengono 'genre' o 'platform'
+        if 'genre' in features or 'platform' in features:
+            X_final = pd.get_dummies(X_final, columns=[col for col in ['genre', 'platform'] if col in features])
+
         y = df['category']
 
     elif classification_type == "type2":

@@ -286,81 +286,88 @@ with st.expander("VISUALIZATIONS"):
 with st.expander("MACHINE LEARNING"):
 
         st.markdown("""
-        In this part, i made 2 distinct classification model:
-        - **Classification by Genre and Platform:** The model try to classify the videogames in one of these 3 categories -> [Good Game, Average Game, Bad Game] knowing only the genre and the platform of the videogame.
-        - **Classification by Metascore:** The model try to classify the videogames in a **succesfull** game for the players or **not successful** knowing only the score obtained by metacritic.
-        """)
+                In this part, i made 2 distinct classification model:
+                - **Quality Classification:** The model try to classify the videogames into one of these 3 categories -> [Good Game, Average Game, Bad Game] based on the selected features. The quality of the videogame in this case depends on the rating it obtained from Metacritic.
+                - **Game Success Classification:** The model try to classify the videogames in a **succesfull** game for the players or **not successful** knowing only the score obtained by metacritic.
+                """)
 
-        model_selection = st.selectbox('Select which model you want to display:', ["","Classification by Genre and Platform","Classification by Metascore"])
+        model_selection = st.selectbox('Select which model you want to display:', ["","Quality Classification","Game Success Classification"])
 
-        if model_selection == "Classification by Genre and Platform":
-
-                df = pd.read_csv('Dataset/clean_dataset.csv')
-                X_final, y = vis.prepare_data(df, "type1")
-
-                method_selected = st.selectbox("Select which classification method to use:",
-                                               ["Logistic Regression", "Support Vector Machine",
-                                                "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
-                options = [round(x * 0.05, 2) for x in range(1, 20)]
-                test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
-                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=test_size, random_state=42)
-
-                if method_selected == "Logistic Regression":
-                        vis.loading_data("Logistic Regression")
-                        model = LogisticRegression(random_state=42)
-                elif method_selected == "Support Vector Machine":
-                        vis.loading_data("Support Vector Machine")
-                        model = SVC(random_state=42, C=0.01, kernel='rbf', gamma= 0.001)
-                elif method_selected == "Gradient Boosting":
-                        vis.loading_data("Gradient Boosting")
-                        model = GradientBoostingClassifier(random_state=42,)
-                elif method_selected == "K-Nearest Neighbors":
-                        vis.loading_data("K-Nearest Neighbors")
-                        model = KNeighborsClassifier()
-                elif method_selected == "Random Forest":
-                        vis.loading_data("Random Forest")
-                        model = RandomForestClassifier(random_state=42, n_estimators=10, max_depth=10,min_samples_split=10, min_samples_leaf=5)  # changed to avoid overfitting
-
-                # Evaluation
-                accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "type1")
-
-                # Display results
-                st.write(f"Accuracy: {accuracy * 100} %")
-                st.write(f"Precision: {precision * 100} %")
-                st.write(f"Recall: {recall * 100} %")
-                st.write(f"F1 Score: {f1 * 100} %")
-
-                vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
-
-        elif model_selection == "Classification by Metascore":
-
-                df = pd.read_csv('Dataset/clean_dataset.csv')
-                X_final, y = vis.prepare_data(df, "type2")
-
+        if model_selection == "Quality Classification":
 
                 method_selected = st.selectbox("Select which classification method to use:",
                                                ["Logistic Regression", "Support Vector Machine",
                                                 "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
 
+                features_selected = st.multiselect("Select which features to use:",
+                                                   ["userscore", "platform", "genre", "year"])
+                # Controlla se sono state selezionate features
+                if len(features_selected) == 0:
+                        st.write("Select at least one feature.")
+                else:
+                        X_final, y = vis.prepare_data(cleaned_videogames_df, "type1", features=features_selected)
+
+                        options = [round(x * 0.05, 2) for x in range(1, 20)]
+                        test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+                        X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=test_size,
+                                                                            random_state=22)
+
+                        if method_selected == "Logistic Regression":
+                                vis.loading_data("Logistic Regression")
+                                model = LogisticRegression(random_state=22)
+                        elif method_selected == "Support Vector Machine":
+                                vis.loading_data("Support Vector Machine")
+                                model = SVC(random_state=22)
+                        elif method_selected == "Gradient Boosting":
+                                vis.loading_data("Gradient Boosting")
+                                model = GradientBoostingClassifier(random_state=2)
+                        elif method_selected == "K-Nearest Neighbors":
+                                vis.loading_data("K-Nearest Neighbors")
+                                model = KNeighborsClassifier()
+                        elif method_selected == "Random Forest":
+                                vis.loading_data("Random Forest")
+                                model = RandomForestClassifier(random_state=22)
+
+                        # Evaluation
+                        accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test,
+                                                                                       model, "type1")
+
+                        # Display results
+                        st.write(f"Accuracy: {accuracy * 100} %")
+                        st.write(f"Precision: {precision * 100} %")
+                        st.write(f"Recall: {recall * 100} %")
+                        st.write(f"F1 Score: {f1 * 100} %")
+
+                        vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
+
+        elif model_selection == "Game Success Classification":
+
+                X_final, y = vis.prepare_data(cleaned_videogames_df, "type2")
+
+
+                method_selected = st.selectbox("Select which classification method to use:",
+                                               ["Logistic Regression", "Support Vector Machine",
+                                                "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
+
                 options = [round(x * 0.05, 2) for x in range(1, 20)]
                 test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
-                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size= test_size, random_state=42)
+                X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size= test_size, random_state=22)
 
                 if method_selected == "Logistic Regression":
                         vis.loading_data("Logistic Regression")
-                        model = LogisticRegression(random_state=42)
+                        model = LogisticRegression(random_state=22)
                 elif method_selected == "Support Vector Machine":
                         vis.loading_data("Support Vector Machine")
-                        model = SVC(random_state=42)
+                        model = SVC(random_state=22)
                 elif method_selected == "Gradient Boosting":
                         vis.loading_data("Gradient Boosting")
-                        model = GradientBoostingClassifier(random_state=42)
+                        model = GradientBoostingClassifier(random_state=22)
                 elif method_selected == "K-Nearest Neighbors":
                         vis.loading_data("K-Nearest Neighbors")
                         model = KNeighborsClassifier()
                 elif method_selected == "Random Forest":
                         vis.loading_data("Random Forest")
-                        model = RandomForestClassifier(random_state=42)
+                        model = RandomForestClassifier(random_state=22)
 
                 # Evaluation
                 accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "type2")
