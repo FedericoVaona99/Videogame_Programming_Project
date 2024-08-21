@@ -34,7 +34,7 @@ def plot_histogram(data, column, title, bins=50, color='blue'):
 def plot_correlation_heatmap(data, title):
     fig, ax = plt.subplots(figsize=(12, 10))
     corr_matrix = data.corr(numeric_only=True)
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax, linewidths=2)
     ax.set_title(title)
     st.pyplot(fig)
 

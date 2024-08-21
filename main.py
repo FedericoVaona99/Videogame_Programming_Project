@@ -3,28 +3,29 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
-from sklearn.metrics import classification_report, confusion_matrix
+#from sklearn.metrics import classification_report, confusion_matrix
 
 import visualization_functions as vis
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, Lasso, LogisticRegression
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, GradientBoostingClassifier, RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
+ # LOADING DATASETS (Original and cleaned)
+ # I did the complete EDA part and cleaned the dataframe with comments on colab notebook uploaded on github to mantain the streamlit code more ordered
+
 original_videogames_df = pd.read_csv('Dataset/metacritic_18.07.2021_csv.csv')
-# I did the complete EDA part and cleaned the dataframe on colab notebook uploaded on github
 cleaned_videogames_df = pd.read_csv('Dataset/clean_dataset.csv')
-cleaned_videogames_df['date'] = pd.to_datetime(cleaned_videogames_df['date'])
 
 # Initializing web page
 st.set_page_config(layout = 'wide')
-st.header('Videogames: Metacritic Vs Userscore ratings')
+st.title('Videogames: Metacritic Vs Userscore ratings')
 st.markdown("**The original dataset could be found here:** [Metacritic dataset](https://www.kaggle.com/datasets/taranenkodaria/videogame-metacritic)")
 st.markdown("""
             The dataset contains a series of videogames from the 1998 to 2021 with their rating given by a critic (Metacritic) and from the players.\n
@@ -39,7 +40,7 @@ st.markdown("""
 
 
 #####################
-# some EDA
+# part of the EDA
 #####################
 st.sidebar.write('Choose which Dataset you want to see:')
 if st.sidebar.checkbox('Original Dataset'):
@@ -55,12 +56,14 @@ if st.sidebar.checkbox('Cleaned Dataset'):
         st.write(cleaned_videogames_df.describe().T)
 else:
         st.write()
-#####################
-# Visualization Section
-#####################
 
 
-with st.expander("VISUALIZATION"):
+#######################
+# VISUALIZATION SECTION
+#######################
+
+
+with st.expander("VISUALIZATIONS"):
 
         selection = st.selectbox('Select if you want to see stats for **platform** or **genre** of the videogame:', [" ","genre","platform"])
         if selection == "genre":
@@ -128,11 +131,9 @@ with st.expander("VISUALIZATION"):
 
 
         # Comparison between Metascore and Userscore
-        st.write("### Comparison between Metascore and Userscore")
+        st.header("Comparison between Metascore and Userscore")
 
-        st.write("### Comparison of the two distribution")
-
-        st.write("We can see that both the score metric follow a Normal Distribution.")
+        st.write("##### We can see that both the score metric follow a Normal Distribution.")
 
         col3, col4 = st.columns(2)
         with col3:
@@ -157,7 +158,7 @@ with st.expander("VISUALIZATION"):
 
         plt.legend()
         st.pyplot(plt)
-        st.write("Metacritic scores tend to be higher ")
+        st.write("#### Metacritic scores tend to be higher ")
 
         # Calcolo delle differenze tra metascore e userscore
         # Before, I remove the outlier introduced during the data cleaning
@@ -271,19 +272,16 @@ with st.expander("VISUALIZATION"):
         # Plotting the complete correlation matrix
         plt.figure(figsize=(
         len(correlation_matrix.columns), len(correlation_matrix.columns) * 0.5))  # Size the figure to fit all variables
-        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=2)
         plt.title('Complete Correlation Matrix with Top 5 Genres and Platforms')
         plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
-        plt.yticks(rotation=0)  # Ensure y-axis labels are horizontal for better readability
-        plt.tight_layout()  # Adjust layout to not cut off labels
 
-        # Use Streamlit's function to show the plot
         st.pyplot(plt)
 
 
-#######################
+#####################
 ### MACHINE LEARNING
-#######################
+#####################
 
 with st.expander("MACHINE LEARNING"):
 
