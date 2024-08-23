@@ -227,7 +227,7 @@ with st.expander("**VISUALIZATIONS**"):
 
         # Computation of differences between metascore and userscore
 
-        # Before, I remove the outlier introduced during the data cleaning
+        # Before, I remove the outlier introduced during the data cleaning ----> On Colab, there is the plot with the outliers
         score_diff_df = original_videogames_df.copy()
         to_be_decided_mask = score_diff_df.userscore == 'tbd'
         score_diff_df.loc[to_be_decided_mask,'userscore'] = np.nan
@@ -386,7 +386,7 @@ with st.expander("**MACHINE LEARNING**"):
 
         st.markdown("""
                 In this part, i made 2 distinct classification model:
-                - **Game Success Classification:** The model try to classify the videogames in a **succesfull** game for the players or **not successful** knowing only the score obtained by metacritic.
+                - **Game Success Classification:** The model try to classify the videogames in a **succesfull** game **for the players** or **not successful** knowing only the score obtained by metacritic.
                 - **Quality Classification:** The model try to classify the videogames into one of these 3 categories -> [Good Game, Average Game, Bad Game] based on the selected features. The quality of the videogame in this case depends on the rating it obtained from Metacritic.
                 """)
 
