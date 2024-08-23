@@ -16,6 +16,7 @@ from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
+# Disable the deprecation warning for Pyplot in Streamlit
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
  # LOADING DATASETS (Original and cleaned)
@@ -203,12 +204,14 @@ with st.expander("**VISUALIZATIONS**"):
                 """)
 
 
+
+        # Plot Meta and User scores distributions together for comparison
         plt.figure(figsize=(14, 6))
 
-        # Metascore's distrib
+        # Metascore's distribution
         sns.histplot(cleaned_videogames_df['metascore'], bins=100, color='red', label='Metascore', alpha=0.8)
 
-        # Userscore distrib
+        # Userscore distribution
         sns.histplot(cleaned_videogames_df['userscore'], bins=100, color='yellow', label='Userscore', alpha=0.5)
 
         # Titles and labels
@@ -222,7 +225,8 @@ with st.expander("**VISUALIZATIONS**"):
                 **Comparison**: Although both distributions have a similar general shape, the Metascore is more concentrated in the higher ranges, while the Userscore is skewed towards the mid-to-lower ranges. This suggests that critics tend to be more generous in their evaluations, whereas players are more critical and maybe they also could have higher expectations from game developers.
                 """)
 
-        # Calcolo delle differenze tra metascore e userscore
+        # Computation of differences between metascore and userscore
+
         # Before, I remove the outlier introduced during the data cleaning
         score_diff_df = original_videogames_df.copy()
         to_be_decided_mask = score_diff_df.userscore == 'tbd'
@@ -232,10 +236,10 @@ with st.expander("**VISUALIZATIONS**"):
         score_diff_df.userscore = score_diff_df.userscore.round()
         score_diff_df.dropna(subset=['metascore', 'userscore'], inplace=True)
 
-        #Then
+        # After, I had at this dataframe with no outlier a new column ('score_diff')
         score_diff_df['score_diff'] = score_diff_df['metascore'] - score_diff_df['userscore']
 
-        # Distribuzione delle differenze
+        # Plot the score_diff distribution
         plt.figure(figsize=(12, 6))
         sns.histplot(score_diff_df['score_diff'], bins=20, color='purple')
         plt.title('Distribution of the differences between Metascore and Userscore rating')
@@ -270,7 +274,7 @@ with st.expander("**VISUALIZATIONS**"):
         ax.xaxis.set_major_locator(mdates.YearLocator())  # Set major locator to every year
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))  # Format x-axis labels to show only the year
         # Rotate x-axis labels to prevent overlap
-        ax.tick_params(axis='x', rotation=45)  # Rotate labels to 45 degrees
+        ax.tick_params(axis='x', rotation=45)
 
         plt.title('Comparison of Average User Scores and Metascores Over Time')
         plt.xlabel('Year')
@@ -323,7 +327,7 @@ with st.expander("**VISUALIZATIONS**"):
         st.write("\n")
         # Correlation Heatmap
         st.write("### Correlation Heatmap without the categorical variables")
-        vis.plot_correlation_heatmap(cleaned_videogames_df, 'Correlation between Metascore and Userscore')
+        vis.plot_correlation_heatmap(cleaned_videogames_df)
         st.markdown("""
         **Observation**: 
 
@@ -396,7 +400,8 @@ with st.expander("**MACHINE LEARNING**"):
 
                 features_selected = st.multiselect("Select which features to use:",
                                                    ["userscore", "platform", "genre", "year"])
-                # Controlla se sono state selezionate features
+
+                # check if there are fatures selected
                 if len(features_selected) == 0:
                         st.write("Select at least one feature.")
                 else:
@@ -404,6 +409,7 @@ with st.expander("**MACHINE LEARNING**"):
 
                         options = [round(x * 0.05, 2) for x in range(1, 20)]
                         test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+
                         X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=test_size,
                                                                             random_state=22)
 
@@ -446,6 +452,7 @@ with st.expander("**MACHINE LEARNING**"):
 
                 options = [round(x * 0.05, 2) for x in range(1, 20)]
                 test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+
                 X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size= test_size, random_state=22)
 
                 if method_selected == "Logistic Regression":
