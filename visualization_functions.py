@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import time
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -32,10 +30,10 @@ def plot_histogram(data, column, title, bins=50, color='blue'):
     st.pyplot(fig)
 
 def plot_correlation_heatmap(data, title):
-    fig, ax = plt.subplots(figsize=(12, 10))
+    fig, ax = plt.subplots(figsize=(4, 3))
     corr_matrix = data.corr(numeric_only=True)
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax, linewidths=2)
-    ax.set_title(title)
+    plt.tight_layout()
     st.pyplot(fig)
 
 # Function to get top 5 games by Metascore for each selected genre

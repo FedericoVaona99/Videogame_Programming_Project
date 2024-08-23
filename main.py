@@ -1,9 +1,10 @@
 # Videogames Programming Project
 
+# python -m streamlit run main.py
+
 import pandas as pd
 import numpy as np
 import seaborn as sns
-#from sklearn.metrics import classification_report, confusion_matrix
 
 import visualization_functions as vis
 import streamlit as st
@@ -25,18 +26,25 @@ cleaned_videogames_df = pd.read_csv('Dataset/clean_dataset.csv')
 
 # Initializing web page
 st.set_page_config(layout = 'wide')
-st.title('Videogames: Metacritic Vs Userscore ratings')
-st.markdown("**The original dataset could be found here:** [Metacritic dataset](https://www.kaggle.com/datasets/taranenkodaria/videogame-metacritic)")
+st.title('🎮 Videogames: Metacritic Vs Userscore Ratings')
+
 st.markdown("""
-            The dataset contains a series of videogames from the 1998 to 2021 with their rating given by a critic (Metacritic) and from the players.\n
-            The features of this datasets are: 
-            - **Titles**: The game names.
-            - **Platforms**: The game platform, games can have an implementation on several platforms.
-            - **Metascore**: The rating put down metacritic.com.
-            - **Userscore**: The user rating, may not be available for new games.
-            - **Genre**: The game genre, games can have more than one genre.
-            - **Date**: The date of release of the game.
-            """)
+**Explore the relationship between critic and player ratings across various genres, platforms, and time periods.**
+
+This project provides insights into video game ratings by comparing critic scores from **Metacritic** with player scores. 
+The dataset covers video games released between **1998 and 2021**.
+
+**The original dataset can be found here:** [Metacritic dataset](https://www.kaggle.com/datasets/taranenkodaria/videogame-metacritic)
+
+### 📊 Dataset Features:
+- **Titles**: The names of the video games.
+- **Platforms**: The platforms on which the games are available (e.g., PC, PlayStation, Xbox). Some games are available on multiple platforms.
+- **Metascore**: The aggregated critic score from [Metacritic](https://www.metacritic.com), on a scale of 0 to 100.
+- **Userscore**: The player score, provided by users on Metacritic, on a scale of 0 to 10. For some new or less popular games, the score may still be marked as 'tbd' (to be determined).
+- **Genre**: The genre of the game (e.g., Action, RPG, Adventure). Some games may belong to multiple genres.
+- **Date**: The official release date of the game.
+---
+""")
 
 
 #####################
@@ -66,25 +74,45 @@ else:
 with st.expander("VISUALIZATIONS"):
 
         selection = st.selectbox('Select if you want to see stats for **platform** or **genre** of the videogame:', [" ","genre","platform"])
+
         if selection == "genre":
-                # number of games for each platforms
+                # Show the number of games for each platforms
                 general_counts = cleaned_videogames_df[selection].value_counts()
                 vis.plot_bar((12, 6), general_counts, col='lightgreen', title='Number of Games per ' + selection, x_lab = selection, y_lab='Number of Games', rot=90)
+                st.markdown("""
+                **Observation**: The 'Action' genre dominates the dataset with a significantly higher number of games compared to other genres, such as 'Role-playing' and 'Adventure'. This suggests that action games are much more common in the market. 
 
-                # Average User Score by Genre
+                It's important to note that many games belong to multiple genres, and 'Action' is frequently one of them, further explaining its dominance. Other genres like 'Puzzle', 'Fighting', and 'Party' have considerably fewer games, indicating their niche appeal or smaller market presence.
+                """)
+
+                # Show Average User Score by Genre
                 avg_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
                 vis.plot_bar(fig_size=(12, 6), datas=avg_userscore, col='lightgreen', title='Average User Score by '+ selection,
                              x_lab=selection, y_lab='Average User Score', rot=90)
+                st.markdown("""
+                **Observation**: The average user scores across different genres are relatively similar, with most genres receiving an average score between **69 and 75**. 
 
-                # Average Metacritic score by Genre
+                Genres such as 'Role-playing' and 'Platformer' tend to have slightly higher user ratings, indicating stronger engagement from players. On the other hand, genres like 'Sports' and 'Simulation' have lower average scores, suggesting that they may appeal less to the average player.
+
+                Overall, there doesn't seem to be a dramatic variation in user scores between genres, which indicates a generally consistent reception from players regardless of the type of game.
+                """)
+
+                # Show Average Metacritic score by Genre
                 avg_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
                 vis.plot_bar(fig_size=(12, 6), datas=avg_metascore, col='lightgreen',
                              title='Average Metacritic Score by ' + selection,
                              x_lab=selection, y_lab='Average Metacritic Score', rot=90)
+                st.markdown("""
+                Comparing the average Metacritic scores with the average User scores by genre, we notice that both critics and users exhibit consistent average scores across genres, with ranges being relatively narrow.
 
-                # top 3 Best game for genre selected
+                'Fighting' and 'Party' genres are the higher average scores from users, while the 'Party' genre for metacritic has the lowest average score and they have not a clearly favorred game.
+                
+                Overall, both critics and users seem to agree on the general ranking of genres, with only minor differences in the actual scores. This suggests that the perception of game quality between critics and players is fairly aligned across genres.
+                """)
+
+                # Show top 3 Best game for genre selected
                 unique_genres = sorted(cleaned_videogames_df['genre'].unique())
-                genre_selected = st.multiselect('Select for which genre you want to see the best game:', unique_genres)
+                genre_selected = st.multiselect('Select one or more genres to view the top-rated games:', unique_genres)
 
                 col1, col2 = st.columns(2)
 
@@ -94,27 +122,48 @@ with st.expander("VISUALIZATIONS"):
                         with col2:
                                 vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genre_selected, 'userscore', 3)
                 else:
-                        st.write("Please, select at least one genre to see the top games.")
+                        st.write("Please, select at least one genre to display the top games.")
 
         elif selection == "platform":
 
+                # Show the number of games per platform
                 general_counts = cleaned_videogames_df[selection].value_counts()
                 vis.plot_bar((12, 6), general_counts, col = 'lightblue', title = 'Number of Games per ' + selection, x_lab = selection, y_lab = 'Number of Games', rot=90)
+                st.markdown("""
+                **Observation**: The 'PC' platform has by far the highest number of games, with over **7,600 titles**, significantly more than any other platform. This likely reflects the openness of the PC platform for game development and the large number of indie and smaller-scale games available on PC.
 
-                # Average User Score by Platform
+                The next most popular platforms is **iOS**, showing that mobile gaming (iOS) remain important in the gaming landscape due to its accessibility and the widespread availability of mobile devices.
+
+                Platforms such as **PlayStation 5** and **Xbox Series X** have very few games in comparison, due to their more recent releases.
+                """)
+
+                # Show Average User Score by Platform
                 avg_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
                 vis.plot_bar(fig_size=(12, 6), datas=avg_userscore, col='lightblue', title='Average User Score by '+ selection,
                              x_lab=selection, y_lab='Average User Score', rot=90)
+                st.markdown("""
+                **Observation**: The platform with the highest average user score is **Nintendo 64** with a score of **79**, followed closely by **Dreamcast** at **77**. This suggests that games on these older platforms are generally highly regarded by players. 
 
-                # Average Metacritic score by Platform
+                On the other hand, **Stadia** has the lowest average user score at **67**, indicating that games on this platform may not be as well-received by players.
+                """)
+
+                # Show Average Metacritic score by Platform
                 avg_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
                 vis.plot_bar(fig_size=(12,6), datas=avg_metascore, col='lightblue',
                              title='Average Metacritic Score by ' + selection,
                              x_lab=selection, y_lab='Average Metacritic Score', rot=90)
+                st.markdown("""
+                Comparing the average user scores and the average Metacritic scores by platform, we notice that for both users and critics, the **Nintendo 64** holds the top spot with the highest average scores (79 for both groups). This suggests a strong consensus between critics and players regarding the quality of games on this platform.
 
-                # top 3 Best game for platform selected
+                **Stadia** holds the lowest average user score (67) and one of the lower critic scores (68). This suggests that both players and critics agree on the underperformance of games on this platform.
+
+                **General trends**:
+                The range of scores is narrow for both groups, with most platforms receiving relatively positive scores. However, there seems to be a slight tendency for users to rate older platforms (like Dreamcast) higher than critics, while critics tend to give newer platforms (like PlayStation 4 and 5) marginally better ratings.
+                """)
+
+                # Show top 3 Best game for platform selected
                 unique_platforms = sorted(cleaned_videogames_df['platform'].unique())
-                platforms_selected = st.multiselect('Select for which platform you want to see the best game:', unique_platforms)
+                platforms_selected = st.multiselect('Select one or more platforms to view the top-rated games:', unique_platforms)
 
                 col1, col2 = st.columns(2)
 
@@ -124,10 +173,7 @@ with st.expander("VISUALIZATIONS"):
                         with col2:
                                 vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'userscore', 3)
                 else:
-                        st.write("Please, select at least one platform to see the top games.")
-
-
-
+                        st.write("Please, select at least one platform to display the top games.")
 
 
         # Comparison between Metascore and Userscore
@@ -141,6 +187,13 @@ with st.expander("VISUALIZATIONS"):
         with col4:
                 vis.plot_histogram(cleaned_videogames_df, 'userscore', 'Userscore Distribution', color='orange')
 
+        st.markdown("""
+                **Observations**: Both the Metascore and Userscore distributions follow a roughly normal (bell-shaped) distribution, although there are some key differences between the two:
+
+                **Metascore Distribution**: The Metascore distribution is slightly skewed to the right, with the majority of scores falling between **70 and 85**. This indicates that critics tend to give relatively high scores to games, with very few games receiving scores below 60. The peak is centered around **75**, showing that most games are rated in the upper-middle range.
+
+                **Userscore Distribution**: The Userscore distribution, while also bell-shaped, shows a broader spread, with a higher proportion of games receiving both very low and very high scores. The peak is centered around **70**, but there is a noticeable presence of extreme ratings (closer to 100 or below 50). This wider range suggests that players may have more varied opinions compared to critics.
+                """)
 
 
         plt.figure(figsize=(14, 6))
@@ -158,7 +211,9 @@ with st.expander("VISUALIZATIONS"):
 
         plt.legend()
         st.pyplot(plt)
-        st.write("#### Metacritic scores tend to be higher ")
+        st.markdown("""
+                **Comparison**: While both distributions share a similar general shape, the Metascore is more concentrated in the higher ranges, whereas the Userscore shows greater variability and more polarized ratings. This could imply that critics tend to be more moderate and consistent in their evaluations, while players exhibit more extreme opinions, either very positive or very negative.
+                """)
 
         # Calcolo delle differenze tra metascore e userscore
         # Before, I remove the outlier introduced during the data cleaning
@@ -183,7 +238,9 @@ with st.expander("VISUALIZATIONS"):
         plt.tight_layout()
         st.pyplot(plt)
 
-        st.write("We can see that the peak of the distribution is near 0, then the ratings often corresponds; but there are several cases where we have huge differences between the userscore and the metacritic scores with differences of 30-40 points")
+        st.markdown("""
+                **Observation:** We can see that the peak of the distribution is near 0, then the ratings often corresponds; but there are several cases where we have huge differences between the userscore and the metacritic scores with differences of 30-40 points.
+                """)
 
 
         # Convert 'date' column to datetime if not already
@@ -214,6 +271,12 @@ with st.expander("VISUALIZATIONS"):
         plt.legend()
         plt.grid(True)
         st.pyplot(plt)
+
+        st.markdown("""
+        **Observation**: Both the average User Score and Metascore show a significant decline after 2000. Prior to this, both scores were consistently higher, hovering around 80-85.\n
+        After 2001, the scores stabilized at a lower range, with User score remaining higher than Metascore until 2010, when the trend reversed.
+        """)
+        st.write("\n")
 
         col5, col6 = st.columns(2)
         cleaned_videogames_df.reset_index(inplace=True)
@@ -250,9 +313,19 @@ with st.expander("VISUALIZATIONS"):
                 st.write("Top game for each year per Players")
                 st.dataframe(best_games_per_year_user[['title', 'platform', 'metascore', 'userscore', 'year']], width=750)
 
-                # Correlation Heatmap
+        st.write("\n")
+        # Correlation Heatmap
         st.write("### Correlation Heatmap without the categorical variables")
         vis.plot_correlation_heatmap(cleaned_videogames_df, 'Correlation between Metascore and Userscore')
+        st.markdown("""
+        **Observation**: 
+
+        1. **Metascore and Userscore**: A correlation of **0.61** indicates a relatively strong positive relationship between the scores given by critics and users. This suggests that, in general, when critics give high scores, users tend to do the same, though there is still some variability.
+
+        2. **Year and Userscore**: There is a weak negative correlation of **-0.16** between the year and the Userscore, indicating that games released in more recent years tend to have slightly lower user ratings.
+
+        3. **Year and Metascore**: The correlation between the year and the Metascore is very close to zero (**0.022**), indicating no significant relationship between the year of release and the critics' ratings.
+        """)
 
         st.write("### Correlation Heatmap with the categorical variables")
 
@@ -282,9 +355,17 @@ with st.expander("VISUALIZATIONS"):
         sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=2)
         plt.title('Complete Correlation Matrix with Top 5 Genres and Platforms')
         plt.xticks(rotation=90)  # Rotate x-axis labels for better readability
-
         st.pyplot(plt)
 
+        st.markdown("""
+        **Observations**: This correlation heatmap, which includes categorical variables only for top 5 genres and platforms, shows several interesting patterns:
+
+        1. **Year correlation**: The year of release has a slight positive correlation with some platforms like **Switch** (**0.38**) and a weak negative correlation with **PC** (**-0.24**). This suggests that newer games on platforms like Switch may receive higher scores, while older games on PC may have had better performance.
+
+        2. **Genre and Platform correlations**: There are negative correlations between certain platforms and genres, such as **PC** and **action** games (**-0.24**) and **iOS** with **role-playing** (**-0.45**). This suggests that certain genres may be less popular or less common on specific platforms.
+
+        Overall, the heatmap reveals a mix of weak correlations, indicating that while some relationships exist between platforms, genres, and scores, they are generally not strong enough to suggest a dominant pattern.
+        """)
 
 #####################
 ### MACHINE LEARNING
