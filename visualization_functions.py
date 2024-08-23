@@ -22,6 +22,31 @@ def plot_bar(fig_size, datas, col = 'blue', title = '', x_lab = '', y_lab = '', 
       plt.text(bar.get_x() + bar.get_width()/2, yval, int(yval), ha='center', va='bottom', fontsize=10)
   st.pyplot()
 
+def plot_histograms_with_same_scale(data, col1, col2, title1, title2, bins=50, color1='blue', color2='orange'):
+    # Crea le figure e gli assi per i due grafici
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5), sharey=True)
+
+    # Plotta il primo istogramma (Metascore)
+    sns.histplot(data[col1].dropna(), bins=bins, ax=ax1, color=color1)
+    ax1.set_title(title1)
+    ax1.set_xlabel(col1)
+
+    # Plotta il secondo istogramma (Userscore)
+    sns.histplot(data[col2].dropna(), bins=bins, ax=ax2, color=color2)
+    ax2.set_title(title2)
+    ax2.set_xlabel(col2)
+
+    # Sincronizza i limiti dell'asse y (condiviso tramite sharey=True)
+    max_y = max(ax1.get_ylim()[1], ax2.get_ylim()[1])
+    ax1.set_ylim(0, max_y)
+    ax2.set_ylim(0, max_y)
+
+    # Ottimizza il layout
+    plt.tight_layout()
+
+    # Mostra il grafico in Streamlit
+    st.pyplot(fig)
+
 def plot_histogram(data, column, title, bins=50, color='blue'):
     fig, ax = plt.subplots()
     sns.histplot(data[column].dropna(), bins=bins, ax=ax, color=color)
