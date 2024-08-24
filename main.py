@@ -77,9 +77,9 @@ with st.expander("**VISUALIZATIONS**"):
         selection = st.selectbox('Select if you want to see stats for **platform** or **genre** of the videogame:', [" ","genre","platform"])
 
         if selection == "genre":
-                # Show the number of games for each platforms
-                general_counts = cleaned_videogames_df[selection].value_counts()
-                vis.plot_bar((12, 6), general_counts, col='lightgreen', title='Number of Games per ' + selection, x_lab = selection, y_lab='Number of Games', rot=90)
+                # Show the number of games for each genre
+                genre_counts = cleaned_videogames_df[selection].value_counts()
+                vis.plot_bar((12, 6), genre_counts, col='lightgreen', title='Number of Games per ' + selection, x_lab = selection, y_lab='Number of Games', rot=90)
                 st.markdown("""
                 **Observation**: The 'Action' genre dominates the dataset with a significantly higher number of games compared to other genres, such as 'Role-playing' and 'Adventure'. This suggests that action games are much more common in the market. 
 
@@ -87,8 +87,8 @@ with st.expander("**VISUALIZATIONS**"):
                 """)
 
                 # Show Average User Score by Genre
-                avg_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
-                vis.plot_bar(fig_size=(12, 6), datas=avg_userscore, col='lightgreen', title='Average User Score by '+ selection,
+                avg_genre_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
+                vis.plot_bar(fig_size=(12, 6), datas=avg_genre_userscore, col='lightgreen', title='Average User Score by '+ selection,
                              x_lab=selection, y_lab='Average User Score', rot=90)
                 st.markdown("""
                 **Observation**: The average user scores across different genres are relatively similar, with all the genres receiving an average score between **69 and 75**. 
@@ -99,8 +99,8 @@ with st.expander("**VISUALIZATIONS**"):
                 """)
 
                 # Show Average Metacritic score by Genre
-                avg_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
-                vis.plot_bar(fig_size=(12, 6), datas=avg_metascore, col='lightgreen',
+                avg_genre_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
+                vis.plot_bar(fig_size=(12, 6), datas=avg_genre_metascore, col='lightgreen',
                              title='Average Metacritic Score by ' + selection,
                              x_lab=selection, y_lab='Average Metacritic Score', rot=90)
                 st.markdown("""
@@ -111,16 +111,19 @@ with st.expander("**VISUALIZATIONS**"):
                 Overall, both critics and users seem to agree on the general ranking of genres, with only minor differences in the actual scores. This suggests that the perception of game quality between critics and players is fairly aligned across genres.
                 """)
 
-                # Show top 3 Best game for genre selected
+                # MultiSelect of all the genres
                 unique_genres = sorted(cleaned_videogames_df['genre'].unique())
                 genre_selected = st.multiselect('Select one or more **genres** to view the top3-rated games:', unique_genres)
 
+                # Show top 3 Best game for genre selected
                 col1, col2 = st.columns(2)
 
                 if genre_selected:
                         with col1:
+                                # top 3 of Metacritic
                                 vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genre_selected, 'metascore', 3)
                         with col2:
+                                # top 3 of Players
                                 vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genre_selected, 'userscore', 3)
                 else:
                         st.write("Please, select at least one genre to display the top games.")
@@ -128,8 +131,8 @@ with st.expander("**VISUALIZATIONS**"):
         elif selection == "platform":
 
                 # Show the number of games per platform
-                general_counts = cleaned_videogames_df[selection].value_counts()
-                vis.plot_bar((12, 6), general_counts, col = 'lightblue', title = 'Number of Games per ' + selection, x_lab = selection, y_lab = 'Number of Games', rot=90)
+                platform_counts = cleaned_videogames_df[selection].value_counts()
+                vis.plot_bar((12, 6), platform_counts, col = 'lightblue', title = 'Number of Games per ' + selection, x_lab = selection, y_lab = 'Number of Games', rot=90)
                 st.markdown("""
                 **Observation**: The 'PC' platform has by far the highest number of games, with over **7,600 titles**, significantly more than any other platform. This likely reflects the openness of the PC platform for game development and the large number of indie and smaller-scale games available on PC.
 
@@ -139,8 +142,8 @@ with st.expander("**VISUALIZATIONS**"):
                 """)
 
                 # Show Average User Score by Platform
-                avg_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
-                vis.plot_bar(fig_size=(12, 6), datas=avg_userscore, col='lightblue', title='Average User Score by '+ selection,
+                avg_platform_userscore = cleaned_videogames_df.groupby(selection)['userscore'].mean()
+                vis.plot_bar(fig_size=(12, 6), datas=avg_platform_userscore, col='lightblue', title='Average User Score by '+ selection,
                              x_lab=selection, y_lab='Average User Score', rot=90)
                 st.markdown("""
                 **Observation**: The platform with the highest average user score is **Nintendo 64** with a score of **79**, followed closely by **PlayStation** at **77**. This suggests that games on these older platforms are generally highly rated by players. 
@@ -149,8 +152,8 @@ with st.expander("**VISUALIZATIONS**"):
                 """)
 
                 # Show Average Metacritic score by Platform
-                avg_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
-                vis.plot_bar(fig_size=(12,6), datas=avg_metascore, col='lightblue',
+                avg_platform_metascore = cleaned_videogames_df.groupby(selection)['metascore'].mean()
+                vis.plot_bar(fig_size=(12,6), datas=avg_platform_metascore, col='lightblue',
                              title='Average Metacritic Score by ' + selection,
                              x_lab=selection, y_lab='Average Metacritic Score', rot=90)
                 st.markdown("""
@@ -164,16 +167,19 @@ with st.expander("**VISUALIZATIONS**"):
                 ---
                 """)
 
-                # Show top 3 Best game for platform selected
+                # MultiSelect of all the platforms
                 unique_platforms = sorted(cleaned_videogames_df['platform'].unique())
                 platforms_selected = st.multiselect('Select one or more **platforms** to view the top3-rated games:', unique_platforms)
 
+                # Show top 3 Best game for platform selected
                 col1, col2 = st.columns(2)
 
                 if platforms_selected:
                         with col1:
+                                # top 3 of Metacritic
                                 vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'metascore', 3)
                         with col2:
+                                # top 3 of Players
                                 vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'userscore', 3)
                 else:
                         st.write("Please, select at least one platform to display the top games.")
@@ -183,17 +189,12 @@ with st.expander("**VISUALIZATIONS**"):
         """)
 
 
-        # Comparison between Metascore and Userscore
+        # Comparison of distribution of the ratings between Metascore and Userscore
         st.header("Comparison between Metascore and Userscore")
 
         st.write("##### We can see that both the score metric follow a Normal Distribution.")
 
-        vis.plot_histograms_with_same_scale(
-                cleaned_videogames_df,
-                'metascore', 'userscore',
-                'Metascore Distribution', 'Userscore Distribution',
-                color1='blue', color2='orange'
-        )
+        vis.plot_histograms_with_same_scale(cleaned_videogames_df, 'metascore', 'userscore', 'Metascore Distribution', 'Userscore Distribution', color1='blue', color2='orange')
 
         st.markdown("""
                 **Observations**: Both the Metascore and Userscore distributions follow a roughly normal (bell-shaped) distribution, although there are some key differences between the two:
@@ -205,16 +206,16 @@ with st.expander("**VISUALIZATIONS**"):
 
 
 
-        # Plot Meta and User scores distributions together for comparison
+        # Plot Meta and User scores distributions together for better comparison
         plt.figure(figsize=(14, 6))
 
-        # Metascore's distribution
+        # Metascore distribution
         sns.histplot(cleaned_videogames_df['metascore'], bins=100, color='red', label='Metascore', alpha=0.8)
 
         # Userscore distribution
         sns.histplot(cleaned_videogames_df['userscore'], bins=100, color='yellow', label='Userscore', alpha=0.5)
 
-        # Titles and labels
+        # Plot of results
         plt.title('The two distribution together')
         plt.xlabel('Score')
         plt.ylabel('Frequency')
@@ -234,6 +235,8 @@ with st.expander("**VISUALIZATIONS**"):
         score_diff_df.userscore = score_diff_df.userscore.astype(float)
         score_diff_df.userscore = score_diff_df.userscore * 10
         score_diff_df.userscore = score_diff_df.userscore.round()
+
+        # remove all the rows where there is a Nan value in metascore or usescore
         score_diff_df.dropna(subset=['metascore', 'userscore'], inplace=True)
 
         # After, I had at this dataframe with no outlier a new column ('score_diff')
@@ -272,7 +275,6 @@ with st.expander("**VISUALIZATIONS**"):
         # Set major and minor ticks format
         ax = plt.gca()  # Get current axis
         ax.xaxis.set_major_locator(mdates.YearLocator())  # Set major locator to every year
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))  # Format x-axis labels to show only the year
         # Rotate x-axis labels to prevent overlap
         ax.tick_params(axis='x', rotation=45)
 
@@ -292,7 +294,7 @@ with st.expander("**VISUALIZATIONS**"):
         col5, col6 = st.columns(2)
         cleaned_videogames_df.reset_index(inplace=True)
 
-        #  and extract the year
+        #  Add the feature year at the dataset
         cleaned_videogames_df['year'] = cleaned_videogames_df['date'].dt.year
 
         with col5:
@@ -341,8 +343,8 @@ with st.expander("**VISUALIZATIONS**"):
         st.write("### Correlation Heatmap with the categorical variables")
 
         # Identify the top 5 genres and platforms based on occurrence
-        top_genres = cleaned_videogames_df['genre'].value_counts().head(5).index.tolist()
-        top_platforms = cleaned_videogames_df['platform'].value_counts().head(5).index.tolist()
+        top_genres = cleaned_videogames_df['genre'].value_counts().head(5).index.tolist()       # list of top 5 genres
+        top_platforms = cleaned_videogames_df['platform'].value_counts().head(5).index.tolist() # list of top 5 platforms
 
         # Filter the DataFrame to include only rows with top genres and platforms
         filtered_df = cleaned_videogames_df[
@@ -355,10 +357,10 @@ with st.expander("**VISUALIZATIONS**"):
         platform_encoded = pd.get_dummies(filtered_df['platform'], prefix='p')
 
         # Combine the encoded columns with the original DataFrame
-        encoded_df = pd.concat([filtered_df[['metascore', 'userscore','year']], genre_encoded, platform_encoded], axis=1)
+        final_df = pd.concat([filtered_df[['metascore', 'userscore','year']], genre_encoded, platform_encoded], axis=1)
 
         # Compute the correlation matrix for all variables
-        correlation_matrix = encoded_df.corr()
+        correlation_matrix = final_df.corr()
 
         # Plotting the complete correlation matrix
         plt.figure(figsize=(
@@ -390,25 +392,25 @@ with st.expander("**MACHINE LEARNING**"):
                 - **Quality Classification:** The model try to classify the videogames into one of these 3 categories -> [Good Game, Average Game, Bad Game] based on the selected features. The quality of the videogame in this case depends on the rating it obtained from Metacritic.
                 """)
 
-        model_selection = st.selectbox('Select which model you want to display:', ["","Game Success Classification","Quality Classification"])
+        classification_selection = st.selectbox('Select which classification you want to display:', ["","Game Success Classification","Quality Classification"])
 
-        if model_selection == "Quality Classification":
+        if classification_selection == "Quality Classification":
 
                 method_selected = st.selectbox("Select which classification method to use:",
                                                ["Logistic Regression", "Support Vector Machine",
                                                 "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
 
-                features_selected = st.multiselect("Select which features to use:",
+                features_selected = st.multiselect("Select which features to use for prediction:",
                                                    ["userscore", "platform", "genre", "year"])
 
-                # check if there are fatures selected
+                # check if there are features selected
                 if len(features_selected) == 0:
                         st.write("Select at least one feature.")
                 else:
                         X_final, y = vis.prepare_data(cleaned_videogames_df, "type1", features=features_selected)
 
-                        options = [round(x * 0.05, 2) for x in range(1, 20)]
-                        test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+                        slider_options = [round(x * 0.05, 2) for x in range(1, 20)]
+                        test_size = st.select_slider('Slide to select the test size', options=slider_options, value=0.2)
 
                         X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size=test_size,
                                                                             random_state=22)
@@ -430,18 +432,16 @@ with st.expander("**MACHINE LEARNING**"):
                                 model = RandomForestClassifier(random_state=22)
 
                         # Evaluation
-                        accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test,
-                                                                                       model, "type1")
+                        accuracy, precision, recall, f1 = vis.train_and_evaluate_model(X_train, X_test, y_train, y_test, model, "type1")
 
                         # Display results
                         st.write(f"Accuracy: {accuracy * 100} %")
                         st.write(f"Precision: {precision * 100} %")
                         st.write(f"Recall: {recall * 100} %")
                         st.write(f"F1 Score: {f1 * 100} %")
-
                         vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
 
-        elif model_selection == "Game Success Classification":
+        elif classification_selection == "Game Success Classification":
 
                 X_final, y = vis.prepare_data(cleaned_videogames_df, "type2")
 
@@ -450,8 +450,8 @@ with st.expander("**MACHINE LEARNING**"):
                                                ["Logistic Regression", "Support Vector Machine",
                                                 "Gradient Boosting", "K-Nearest Neighbors", "Random Forest"])
 
-                options = [round(x * 0.05, 2) for x in range(1, 20)]
-                test_size = st.select_slider('Slide to select the test size', options=options, value=0.2)
+                slider_options = [round(x * 0.05, 2) for x in range(1, 20)]
+                test_size = st.select_slider('Slide to select the test size', options=slider_options, value=0.2)
 
                 X_train, X_test, y_train, y_test = train_test_split(X_final, y, test_size= test_size, random_state=22)
 
@@ -479,7 +479,6 @@ with st.expander("**MACHINE LEARNING**"):
                 st.write(f"Precision: {precision * 100} %")
                 st.write(f"Recall: {recall * 100} %")
                 st.write(f"F1 Score: {f1 * 100} %")
-
                 vis.plot_Classification_results(accuracy, precision, recall, f1, method_selected)
         else:
                 st.write()
