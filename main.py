@@ -113,18 +113,18 @@ with st.expander("**VISUALIZATIONS**"):
 
                 # MultiSelect of all the genres
                 unique_genres = sorted(cleaned_videogames_df['genre'].unique())
-                genre_selected = st.multiselect('Select one or more **genres** to view the top3-rated games:', unique_genres)
+                genres_selected = st.multiselect('Select one or more **genres** to view the top3-rated games:', unique_genres)
 
                 # Show top 3 Best game for genre selected
                 col1, col2 = st.columns(2)
 
-                if genre_selected:
+                if genres_selected:
                         with col1:
                                 # top 3 of Metacritic
-                                vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genre_selected, 'metascore', 3)
+                                vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genres_selected, 'metascore')
                         with col2:
                                 # top 3 of Players
-                                vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genre_selected, 'userscore', 3)
+                                vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genres_selected, 'userscore')
                 else:
                         st.write("Please, select at least one genre to display the top games.")
 
@@ -177,10 +177,10 @@ with st.expander("**VISUALIZATIONS**"):
                 if platforms_selected:
                         with col1:
                                 # top 3 of Metacritic
-                                vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'metascore', 3)
+                                vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'metascore')
                         with col2:
                                 # top 3 of Players
-                                vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'userscore', 3)
+                                vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'userscore')
                 else:
                         st.write("Please, select at least one platform to display the top games.")
 
