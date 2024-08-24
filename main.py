@@ -32,7 +32,7 @@ st.title('🎮 Videogames: Metacritic Vs Userscore Ratings')
 st.markdown("""
 **Explore the relationship between critic and player ratings across various genres, platforms, and time periods.**
 
-This project provides insights into video game ratings by comparing critic scores from **Metacritic** with player scores. 
+This project provides insights into video game ratings by comparing critic scores on **Metacritic** with player scores. 
 The dataset covers video games released between **1998 and 2021**.
 
 **The original dataset can be found here:** [Metacritic dataset](https://www.kaggle.com/datasets/taranenkodaria/videogame-metacritic)
@@ -74,7 +74,7 @@ else:
 
 with st.expander("**VISUALIZATIONS**"):
 
-        selection = st.selectbox('Select if you want to see stats for **platform** or **genre** of the videogame:', [" ","genre","platform"])
+        selection = st.selectbox('Select if you want to see statistics for **platform** or **genre** of the videogame:', [" ","genre","platform"])
 
         if selection == "genre":
                 # Show the number of games for each genre
@@ -113,7 +113,7 @@ with st.expander("**VISUALIZATIONS**"):
 
                 # MultiSelect of all the genres
                 unique_genres = sorted(cleaned_videogames_df['genre'].unique())
-                genres_selected = st.multiselect('Select one or more **genres** to view the top3-rated games:', unique_genres)
+                genres_selected = st.multiselect('Select at least one or more **genres** to view the top3-rated games:', unique_genres)
 
                 # Show top 3 Best game for genre selected
                 col1, col2 = st.columns(2)
@@ -126,7 +126,7 @@ with st.expander("**VISUALIZATIONS**"):
                                 # top 3 of Players
                                 vis.display_top_games_by_score_type(cleaned_videogames_df,'genre', genres_selected, 'userscore')
                 else:
-                        st.write("Please, select at least one genre to display the top games.")
+                        st.write()
 
         elif selection == "platform":
 
@@ -169,7 +169,7 @@ with st.expander("**VISUALIZATIONS**"):
 
                 # MultiSelect of all the platforms
                 unique_platforms = sorted(cleaned_videogames_df['platform'].unique())
-                platforms_selected = st.multiselect('Select one or more **platforms** to view the top3-rated games:', unique_platforms)
+                platforms_selected = st.multiselect('Select at least one or more **platforms** to view the top3-rated games:', unique_platforms)
 
                 # Show top 3 Best game for platform selected
                 col1, col2 = st.columns(2)
@@ -182,7 +182,7 @@ with st.expander("**VISUALIZATIONS**"):
                                 # top 3 of Players
                                 vis.display_top_games_by_score_type(cleaned_videogames_df, 'platform', platforms_selected, 'userscore')
                 else:
-                        st.write("Please, select at least one platform to display the top games.")
+                        st.write()
 
         st.markdown("""
         ---
@@ -253,7 +253,7 @@ with st.expander("**VISUALIZATIONS**"):
         st.pyplot(plt)
 
         st.markdown("""
-                **Observation:** We can see that the peak of the distribution is near 0, then the ratings often corresponds; but there are several cases where we have huge differences between the userscore and the metacritic scores with differences of 30-40 points.
+                **Observation:** We can see that the peak of the distribution is centered on 0, then the ratings between critics and players often correspond or are similar, but we also notice that there are several cases where we have huge differences between the user score and the Metacritic scores with differences of 30-40 points.
                 """)
 
 
